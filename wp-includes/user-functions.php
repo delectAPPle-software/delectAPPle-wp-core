@@ -922,6 +922,17 @@ function wp_dropdown_users( $args = '' ) {
 
 	$query_args = wp_array_slice_assoc( $r, array( 'blog_id', 'include', 'exclude', 'orderby', 'order', 'who' ) );
 	$query_args['fields'] = array( 'ID', 'user_login', $show );
+
+	/**
+	 * Filter the query arguments for the user drop-down.
+	 *
+	 * @since 4.4.0
+	 *
+	 * @param array $query_args The query arguments for wp_dropdown_users().
+	 * @param array $r          The default arguments for wp_dropdown_users().
+	 */
+	$query_args = apply_filters( 'wp_dropdown_users_args', $query_args, $r );
+
 	$users = get_users( $query_args );
 
 	$output = '';
@@ -1798,7 +1809,7 @@ function _get_additional_user_keys( $user ) {
  */
 function wp_get_user_contact_methods( $user = null ) {
 	$methods = array();
-	if ( get_site_option( 'initial_db_version' ) < 23588 ) {
+	if ( get_network_option( 'initial_db_version' ) < 23588 ) {
 		$methods = array(
 			'aim'    => __( 'AIM' ),
 			'yim'    => __( 'Yahoo IM' ),

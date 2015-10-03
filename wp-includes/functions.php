@@ -1762,7 +1762,7 @@ function wp_upload_dir( $time = null ) {
 	 * Honor the value of UPLOADS. This happens as long as ms-files rewriting is disabled.
 	 * We also sometimes obey UPLOADS when rewriting is enabled -- see the next block.
 	 */
-	if ( defined( 'UPLOADS' ) && ! ( is_multisite() && get_site_option( 'ms_files_rewriting' ) ) ) {
+	if ( defined( 'UPLOADS' ) && ! ( is_multisite() && get_network_option( 'ms_files_rewriting' ) ) ) {
 		$dir = ABSPATH . UPLOADS;
 		$url = trailingslashit( $siteurl ) . UPLOADS;
 	}
@@ -1770,7 +1770,7 @@ function wp_upload_dir( $time = null ) {
 	// If multisite (and if not the main site in a post-MU network)
 	if ( is_multisite() && ! ( is_main_network() && is_main_site() && defined( 'MULTISITE' ) ) ) {
 
-		if ( ! get_site_option( 'ms_files_rewriting' ) ) {
+		if ( ! get_network_option( 'ms_files_rewriting' ) ) {
 			/*
 			 * If ms-files rewriting is disabled (networks created post-3.5), it is fairly
 			 * straightforward: Append sites/%d if we're not on the main site (for post-MU
@@ -2587,9 +2587,11 @@ function _default_wp_die_handler( $message, $title = '', $args = array() ) {
 		 	box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
 		}
 
-		<?php if ( 'rtl' == $text_direction ) : ?>
-		body { font-family: Tahoma, Arial; }
-		<?php endif; ?>
+		<?php
+		if ( 'rtl' == $text_direction ) {
+			echo 'body { font-family: Tahoma, Arial; }';
+		}
+		?>
 	</style>
 </head>
 <body id="error-page">
@@ -3766,20 +3768,6 @@ function is_ssl() {
 }
 
 /**
- * Whether SSL login should be forced.
- *
- * @since 2.6.0
- *
- * @see force_ssl_admin()
- *
- * @param string|bool $force Optional Whether to force SSL login. Default null.
- * @return bool True if forced, false if not forced.
- */
-function force_ssl_login( $force = null ) {
-	return force_ssl_admin( $force );
-}
-
-/**
  * Whether to force SSL used for the Administration Screens.
  *
  * @since 2.6.0
@@ -4017,7 +4005,7 @@ function global_terms_enabled() {
 		if ( ! is_null( $filter ) )
 			$global_terms = (bool) $filter;
 		else
-			$global_terms = (bool) get_site_option( 'global_terms_enabled', false );
+			$global_terms = (bool) get_network_option( 'global_terms_enabled', false );
 	}
 	return $global_terms;
 }
